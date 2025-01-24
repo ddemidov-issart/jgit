@@ -43,51 +43,114 @@ import org.ietf.jgss.Oid;
  * Instances of an HttpAuthMethod are not thread-safe, as some implementations
  * may need to maintain per-connection state information.
  */
-abstract class HttpAuthMethod {
+public abstract class HttpAuthMethod {
+
 	/**
 	 * Enum listing the http authentication method types supported by jgit. They
 	 * are sorted by priority order!!!
 	 */
 	public enum Type {
+		/**
+		 * NONE
+		 */
 		NONE {
+			/**
+			 * @param hdr the http header
+			 * @return Returns HttpAuthMethod
+			 */
 			@Override
 			public HttpAuthMethod method(String hdr) {
 				return None.INSTANCE;
 			}
 
+			/**
+			 * @return Returns String
+			 */
 			@Override
 			public String getSchemeName() {
 				return "None"; //$NON-NLS-1$
 			}
 		},
+		/**
+		 * BASIC
+		 */
 		BASIC {
+			/**
+			 * @param hdr the http header
+			 * @return Returns HttpAuthMethod
+			 */
 			@Override
 			public HttpAuthMethod method(String hdr) {
 				return new Basic();
 			}
 
+
+			/**
+			 * @return Returns String
+			 */
 			@Override
 			public String getSchemeName() {
 				return "Basic"; //$NON-NLS-1$
 			}
 		},
+		/**
+		 * DIGEST
+		 */
 		DIGEST {
+			/**
+			 * @param hdr the http header
+			 * @return Returns HttpAuthMethod
+			 */
 			@Override
 			public HttpAuthMethod method(String hdr) {
 				return new Digest(hdr);
 			}
 
+			/**
+			 * @return Returns String
+			 */
 			@Override
 			public String getSchemeName() {
 				return "Digest"; //$NON-NLS-1$
 			}
 		},
+		/**
+		 * NTLM
+		 */
+		NTLM {
+			/**
+			 * @param hdr the http header
+			 * @return Returns HttpAuthMethod
+			 */
+			@Override
+			public HttpAuthMethod method(String hdr) {
+				return new NTLM();
+			}
+
+			/**
+			 * @return Returns String
+			 */
+			@Override
+			public String getSchemeName() {
+				return "NTLM"; //$NON-NLS-1$
+			}
+		},
+		/**
+		 * NEGOTIATE
+		 */
 		NEGOTIATE {
+			/**
+			 * @param hdr the http header
+			 * @return Returns HttpAuthMethod
+			 */
 			@Override
 			public HttpAuthMethod method(String hdr) {
 				return new Negotiate(hdr);
 			}
 
+			/**
+			 * @return Returns String
+			 */
 			@Override
 			public String getSchemeName() {
 				return "Negotiate"; //$NON-NLS-1$
@@ -169,6 +232,9 @@ abstract class HttpAuthMethod {
 		return authentication;
 	}
 
+	/**
+	 * The type
+	 */
 	protected final Type type;
 
 	/**
@@ -523,6 +589,69 @@ abstract class HttpAuthMethod {
 			} catch (GSSException e) {
 				throw new IOException(e);
 			}
+		}
+	}
+
+	/**
+	 * NTLM implementation
+	 */
+	public static class NTLM extends HttpAuthMethod {
+
+		/**
+		 * RequestConfigurer interface
+		 */
+		public interface RequestConfigurer {
+			/**
+			 * @param conn conn
+			 * @param username username
+			 * @param password password
+			 * @param domain domain
+			 * @throws IOException
+			 */
+			void configureRequest(
+					HttpConnection conn,
+					String username,
+					String password,
+					String domain) throws IOException;
+		}
+
+		/**
+		 * request configurer
+		 */
+		public static RequestConfigurer requestConfigurer = null;
+
+		private String username;
+		private String password;
+		private String domain;
+
+		/**
+		 * Constructor
+		 */
+		public NTLM() {
+			super(Type.NTLM);
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		void authorize(final String username, final String password) {
+			// supported username formats: https://msdn.microsoft.com/en-us/library/windows/desktop/aa380525(v=vs.85).aspx
+			// DOMAIN\UserName
+			this.username = username;
+			this.password = password;
+			String[] res = username.split("(\\\\|%5[Cc])");
+			if (res.length > 1) {
+				this.domain = res[0];
+				this.username = res[1];
+			}
+		}
+
+		/** {@inheritDoc} */
+		@Override
+		void configureRequest(HttpConnection conn) throws IOException {
+			if (requestConfigurer == null) {
+				return;
+			}
+			requestConfigurer.configureRequest(conn, username, password, domain);
 		}
 	}
 }

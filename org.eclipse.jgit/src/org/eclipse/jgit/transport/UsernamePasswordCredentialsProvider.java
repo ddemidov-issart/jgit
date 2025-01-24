@@ -106,6 +106,11 @@ public class UsernamePasswordCredentialsProvider extends CredentialsProvider {
 		return true;
 	}
 
+	@Override
+	public void close() {
+		clear();
+	}
+
 	/**
 	 * Destroy the saved username and password..
 	 */
@@ -117,4 +122,25 @@ public class UsernamePasswordCredentialsProvider extends CredentialsProvider {
 			password = null;
 		}
 	}
+
+    private static final class BasicUsernamePasswordCredentialsProvider extends UsernamePasswordCredentialsProvider {
+        BasicUsernamePasswordCredentialsProvider(String username, char[] password) {
+            super(username, password);
+        }
+
+        @Override
+        public HttpAuthMethod getDefaultAuthMethod() {
+            return HttpAuthMethod.Type.BASIC.method(null);
+        }
+    }
+
+	/**
+	 *
+	 * @param username username
+	 * @param password password
+	 * @return Returns UsernamePasswordCredentialsProvider
+	 */
+    public static UsernamePasswordCredentialsProvider basic(String username, char[] password) {
+        return new BasicUsernamePasswordCredentialsProvider(username, password);
+    }
 }
