@@ -640,6 +640,16 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 			TransferConfig.ProtocolVersion protocolVersion)
 			throws TransportException, NotSupportedException {
 		URL u = getServiceURL(service);
+
+		final CredentialsProvider credentialsProvider = getCredentialsProvider();
+		if (credentialsProvider != null) {
+			final HttpAuthMethod defaultAuthMethod = credentialsProvider.getDefaultAuthMethod();
+			if (Type.NONE != defaultAuthMethod.getType()) {
+				authMethod = defaultAuthMethod;
+				authMethod.authorize(currentUri, credentialsProvider);
+			}
+		}
+
 		if (HttpAuthMethod.Type.NONE.equals(authMethod.getType())) {
 			authMethod = authFromUri(currentUri);
 		}
@@ -678,11 +688,27 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 							conn.getResponseMessage());
 
 				case HttpConnection.HTTP_UNAUTHORIZED:
+					// If auth present and it failed -- try another auth method
+					if (authMethod.getType() != Type.NONE) {
+						if (ignoreTypes == null) {
+							ignoreTypes = new HashSet<>();
+						}
+						ignoreTypes.add(authMethod.getType());
+
+						// reset auth method & attempts for next authentication type
+						authMethod = Type.NONE.method(null);
+						authAttempts = 1;
+					}
 					authMethod = HttpAuthMethod.scanResponse(conn, ignoreTypes);
-					if (authMethod.getType() == HttpAuthMethod.Type.NONE)
-						throw new TransportException(uri, MessageFormat.format(
-								JGitText.get().authenticationNotSupported, uri));
-					CredentialsProvider credentialsProvider = getCredentialsProvider();
+					if (authMethod.getType() == HttpAuthMethod.Type.NONE) {
+						if (ignoreTypes == null || ignoreTypes.isEmpty()) {
+							throw new TransportException(uri, MessageFormat.format(
+									JGitText.get().authenticationNotSupported, uri));
+						} else {
+							// Some methods were ignored, thus it seems that auth failed, so report NOT_AUTHORIZED
+							throw new TransportException(uri, JGitText.get().notAuthorized);
+						}
+					}
 					if (credentialsProvider == null)
 						throw new TransportException(uri,
 								JGitText.get().noCredentialsProvider);
@@ -1325,7 +1351,7 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 
 	private boolean isSmartHttp(HttpConnection c, String service) {
 		final String expType = "application/x-" + service + "-advertisement"; //$NON-NLS-1$ //$NON-NLS-2$
-		final String actType = c.getContentType();
+		final String actType = getContentType(c);
 		return expType.equals(actType);
 	}
 
@@ -1377,6 +1403,15 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 		while (!PacketLineIn.isEnd(pckIn.readString())) {
 			// for now, ignore the remaining header lines
 		}
+	}
+
+	/**
+	 * remove charset part
+	 * @param conn http connection
+	 * @return Returns String
+	 */
+	private String getContentType(HttpConnection conn) {
+		return null != conn.getContentType() ? conn.getContentType().split(";")[0] : null;
 	}
 
 	class HttpObjectDB extends WalkRemoteObjectDatabase {
@@ -1829,7 +1864,7 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 						+ conn.getResponseMessage());
 			}
 
-			final String contentType = conn.getContentType();
+			final String contentType = getContentType(conn);
 			if (!responseType.equals(contentType)) {
 				conn.getInputStream().close();
 				throw wrongContentType(responseType, contentType);

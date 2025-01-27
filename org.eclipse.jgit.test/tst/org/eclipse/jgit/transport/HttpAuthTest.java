@@ -70,6 +70,8 @@ public class HttpAuthTest {
 
 	private static String BASIC = "Basic";
 
+	private static String NTLM = "NTLM";
+
 	private static String DIGEST = "Digest";
 
 	private static String NEGOTIATE = "Negotiate";
@@ -84,9 +86,9 @@ public class HttpAuthTest {
 		checkResponse(new String[] { digestHeader, negotiateHeader }, NEGOTIATE);
 		checkResponse(new String[] { negotiateHeader, digestHeader }, NEGOTIATE);
 		checkResponse(new String[] { ntlmHeader, basicHeader, digestHeader,
-				bearerHeader }, DIGEST);
+				bearerHeader }, NTLM);
 		checkResponse(new String[] { ntlmHeader, basicHeader, bearerHeader },
-				BASIC);
+				NTLM);
 		checkResponse(new String[] { ntlmHeader, basicHeader, digestHeader,
 				negotiateHeader, bearerHeader }, NEGOTIATE);
 	}

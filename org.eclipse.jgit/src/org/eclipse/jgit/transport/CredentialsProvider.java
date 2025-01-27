@@ -30,7 +30,7 @@ import org.eclipse.jgit.errors.UnsupportedCredentialItem;
  *
  * @see UsernamePasswordCredentialsProvider
  */
-public abstract class CredentialsProvider {
+public abstract class CredentialsProvider implements AutoCloseable {
 	private static volatile CredentialsProvider defaultProvider;
 
 	/**
@@ -134,4 +134,21 @@ public abstract class CredentialsProvider {
 	public void reset(URIish uri) {
 		// default does nothing
 	}
+
+    /**
+     * Returns the method used for the default connection. <p>
+     * Useful when you are sure that the service uses the specified connection type.
+	 * @return Returns HttpAuthMethod
+     */
+    public HttpAuthMethod getDefaultAuthMethod() {
+        return HttpAuthMethod.Type.NONE.method(null);
+    }
+
+    /**
+     * Destroy the saved credential fields.
+     */
+    @Override
+    public void close() {
+        // default does nothing
+    }
 }
