@@ -610,7 +610,7 @@ public abstract class HttpAuthMethod {
 			 * @param username username
 			 * @param password password
 			 * @param domain domain
-			 * @throws IOException
+			 * @throws IOException throws if needed
 			 */
 			void configureRequest(
 					HttpConnection conn,

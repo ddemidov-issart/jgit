@@ -644,7 +644,7 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 		final CredentialsProvider credentialsProvider = getCredentialsProvider();
 		if (credentialsProvider != null) {
 			final HttpAuthMethod defaultAuthMethod = credentialsProvider.getDefaultAuthMethod();
-			if (Type.NONE != defaultAuthMethod.getType()) {
+			if (HttpAuthMethod.Type.NONE != defaultAuthMethod.getType()) {
 				authMethod = defaultAuthMethod;
 				authMethod.authorize(currentUri, credentialsProvider);
 			}
@@ -689,14 +689,14 @@ public class TransportHttp extends HttpTransport implements WalkTransport,
 
 				case HttpConnection.HTTP_UNAUTHORIZED:
 					// If auth present and it failed -- try another auth method
-					if (authMethod.getType() != Type.NONE) {
+					if (authMethod.getType() != HttpAuthMethod.Type.NONE) {
 						if (ignoreTypes == null) {
 							ignoreTypes = new HashSet<>();
 						}
 						ignoreTypes.add(authMethod.getType());
 
 						// reset auth method & attempts for next authentication type
-						authMethod = Type.NONE.method(null);
+						authMethod = HttpAuthMethod.Type.NONE.method(null);
 						authAttempts = 1;
 					}
 					authMethod = HttpAuthMethod.scanResponse(conn, ignoreTypes);

@@ -215,7 +215,7 @@ public class B3HttpClientConnection implements HttpConnection {
 	 * @param urlStr urlStr
 	 * @param connectTimeoutSeconds connectTimeoutSeconds
 	 * @param httpClientConnectionManagerFactory httpClientConnectionManagerFactory
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException stub
 	 */
 	public B3HttpClientConnection(String urlStr, int connectTimeoutSeconds, B3HttpClientConnectionFactory.HttpClientConnectionManagerFactory httpClientConnectionManagerFactory) throws MalformedURLException {
 		this(urlStr, connectTimeoutSeconds, null, httpClientConnectionManagerFactory);
@@ -226,7 +226,7 @@ public class B3HttpClientConnection implements HttpConnection {
 	 * @param connectTimeoutSeconds connectTimeoutSeconds
 	 * @param proxy proxy
 	 * @param httpClientConnectionManagerFactory httpClientConnectionManagerFactory
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException stub
 	 */
 	public B3HttpClientConnection(String urlStr, int connectTimeoutSeconds, Proxy proxy, B3HttpClientConnectionFactory.HttpClientConnectionManagerFactory httpClientConnectionManagerFactory)
 			throws MalformedURLException {
@@ -239,7 +239,7 @@ public class B3HttpClientConnection implements HttpConnection {
 	 * @param proxy proxy
 	 * @param cl cl
 	 * @param httpClientConnectionManagerFactory httpClientConnectionManagerFactory
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException stub
 	 */
 	public B3HttpClientConnection(String urlStr, int connectTimeoutSeconds, Proxy proxy, HttpClient cl, B3HttpClientConnectionFactory.HttpClientConnectionManagerFactory httpClientConnectionManagerFactory)
 			throws MalformedURLException {
@@ -259,7 +259,7 @@ public class B3HttpClientConnection implements HttpConnection {
 
 	/**
 	 * @return Returns int
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public int getResponseCode() throws IOException {
 		execute();
@@ -275,7 +275,7 @@ public class B3HttpClientConnection implements HttpConnection {
 
 	/**
 	 * @return Returns string
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public String getResponseMessage() throws IOException {
 		execute();
@@ -342,7 +342,7 @@ public class B3HttpClientConnection implements HttpConnection {
 	/**
 	 * @param method
 	 *            the HTTP method
-	 * @throws ProtocolException
+	 * @throws ProtocolException stub
 	 */
 	public void setRequestMethod(String method) throws ProtocolException {
 		this.method = method;
@@ -404,7 +404,7 @@ public class B3HttpClientConnection implements HttpConnection {
 
 	/**
 	 * @return Returns InputString
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public InputStream getInputStream() throws IOException {
 		return resp.getEntity().getContent();
@@ -486,7 +486,7 @@ public class B3HttpClientConnection implements HttpConnection {
 
 	/**
 	 * @return Returns OutputStream
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public OutputStream getOutputStream() throws IOException {
 		if (entity == null)
@@ -560,7 +560,7 @@ public class B3HttpClientConnection implements HttpConnection {
 	 * @param random
 	 *            the source of randomness for this generator or null. See
 	 *            {@link javax.net.ssl.SSLContext#init(KeyManager[], TrustManager[], SecureRandom)}
-	 * @throws KeyManagementException
+	 * @throws KeyManagementException stub
 	 */
 	public void configure(KeyManager[] km, TrustManager[] tm,
 			SecureRandom random) throws KeyManagementException {

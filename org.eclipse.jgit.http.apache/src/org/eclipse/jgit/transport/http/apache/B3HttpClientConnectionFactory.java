@@ -87,7 +87,7 @@ public class B3HttpClientConnectionFactory implements HttpConnectionFactory {
 
 	/**
 	 * Constructor
-	 * @param httpClientConnectionManagerFactory
+	 * @param httpClientConnectionManagerFactory stub
 	 */
 	public B3HttpClientConnectionFactory(HttpClientConnectionManagerFactory httpClientConnectionManagerFactory) {
 		this(httpClientConnectionManagerFactory, 0);
@@ -95,8 +95,8 @@ public class B3HttpClientConnectionFactory implements HttpConnectionFactory {
 
 	/**
 	 * Constructor
-	 * @param httpClientConnectionManagerFactory
-	 * @param connectTimeoutSeconds
+	 * @param httpClientConnectionManagerFactory stub
+	 * @param connectTimeoutSeconds stub
 	 */
 	public B3HttpClientConnectionFactory(HttpClientConnectionManagerFactory httpClientConnectionManagerFactory,
 										 int connectTimeoutSeconds) {
@@ -109,7 +109,7 @@ public class B3HttpClientConnectionFactory implements HttpConnectionFactory {
 	 * @param url
 	 *            a {@link java.net.URL} object.
 	 * @return Returns http connection
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public HttpConnection create(URL url) throws IOException {
 		return new B3HttpClientConnection(url.toString(), connectTimeoutSeconds, httpClientConnectionManagerFactory);
@@ -122,7 +122,7 @@ public class B3HttpClientConnectionFactory implements HttpConnectionFactory {
 	 * @param proxy
 	 *            the proxy to be used
 	 * @return Returns http connection
-	 * @throws IOException
+	 * @throws IOException stub
 	 */
 	public HttpConnection create(URL url, Proxy proxy)
 			throws IOException {
